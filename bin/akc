@@ -1,0 +1,106 @@
+#!/bin/bash
+
+# DIR
+ARDUINO_HOME=/Applications/Arduino.app/Contents/Resources/Java
+ARDUINO_CORE=$ARDUINO_HOME/hardware/arduino/cores/arduino
+ARDUINO_VARIANTS=$ARDUINO_HOME/hardware/arduino/variants
+AVR_HOME=$ARDUINO_HOME/hardware/tools/avr
+
+BUILD_DIR=`pwd`
+
+# CMD
+AVR_BIN=$AVR_HOME/bin
+AVR_GPP=$AVR_BIN/avr-g++
+AVR_GCC=$AVR_BIN/avr-gcc
+AVR_AR=$AVR_BIN/avr-ar
+AVR_OBJCOPY=$AVR_BIN/avr-objcopy
+AVRDUDE=$AVR_BIN/avrdude
+
+# CONFIG
+ARDUINO_VERSION=`cat $ARDUINO_HOME/lib/version.txt | sed "s/\.//g"`
+
+CONFIG_MCU=atmega32u4
+CONFIG_CPU=16000000L
+CONFIG_VID=0x2341
+CONFIG_PID=0x8036
+
+# PORT
+PORT=/dev/tty.usbmodemfa131
+
+# COMPILE
+echo "Compiling..."
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $BUILD_DIR/$1 -o $BUILD_DIR/$1.o 
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/WInterrupts.c -o $BUILD_DIR/WInterrupts.c.o 
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring.c -o $BUILD_DIR/wiring.c.o 
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_analog.c -o $BUILD_DIR/wiring_analog.c.o 
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_digital.c -o $BUILD_DIR/wiring_digital.c.o 
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_pulse.c -o $BUILD_DIR/wiring_pulse.c.o 
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_shift.c -o $BUILD_DIR/wiring_shift.c.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/CDC.cpp -o $BUILD_DIR/CDC.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/HardwareSerial.cpp -o $BUILD_DIR/HardwareSerial.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/HID.cpp -o $BUILD_DIR/HID.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/IPAddress.cpp -o $BUILD_DIR/IPAddress.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/main.cpp -o $BUILD_DIR/main.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/new.cpp -o $BUILD_DIR/new.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/Print.cpp -o $BUILD_DIR/Print.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/Stream.cpp -o $BUILD_DIR/Stream.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/Tone.cpp -o $BUILD_DIR/Tone.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/USBCore.cpp -o $BUILD_DIR/USBCore.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/WMath.cpp -o $BUILD_DIR/WMath.cpp.o 
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/WString.cpp -o $BUILD_DIR/WString.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/WInterrupts.c.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring.c.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_analog.c.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_digital.c.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_pulse.c.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_shift.c.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/CDC.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/HardwareSerial.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/HID.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/IPAddress.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/main.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/new.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/Print.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/Stream.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/Tone.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/USBCore.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/WMath.cpp.o 
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/WString.cpp.o 
+$AVR_GCC -Os -Wl,--gc-sections -mmcu=$CONFIG_MCU -o $BUILD_DIR/$1.elf $BUILD_DIR/$1.o $BUILD_DIR/core.a -L$BUILD_DIR -lm 
+$AVR_OBJCOPY -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 $BUILD_DIR/$1.elf $BUILD_DIR/$1.eep 
+$AVR_OBJCOPY -O ihex -R .eeprom $BUILD_DIR/$1.elf $BUILD_DIR/$1.hex 
+
+# REBOOT
+echo "Forcing reset using 1200bps open/close on port $PORT"
+stty -F $PORT 1200 cs8 cread clocal; sleep 1
+
+# UPLOAD
+echo "Uploading..."
+$AVRDUDE -C$AVR_HOME/etc/avrdude.conf -v -p$CONFIG_MCU -cavr109 -P$PORT -b57600 -D -Uflash:w:$BUILD_DIR/$1.hex:i 
+
+#######################
+#### Arduino Header ###
+#######################
+##include "Arduino.h" #
+#void setup();        #
+#void loop();         #
+#######################
+
+#leonardo.name=Arduino Leonardo
+#leonardo.upload.protocol=avr109
+#leonardo.upload.maximum_size=28672
+#leonardo.upload.speed=57600
+#leonardo.upload.disable_flushing=true
+#leonardo.bootloader.low_fuses=0xff
+#leonardo.bootloader.high_fuses=0xd8
+#leonardo.bootloader.extended_fuses=0xcb
+#leonardo.bootloader.path=caterina
+#leonardo.bootloader.file=Caterina-Leonardo.hex
+#leonardo.bootloader.unlock_bits=0x3F
+#leonardo.bootloader.lock_bits=0x2F
+#leonardo.build.mcu=$CONFIG_MCU
+#leonardo.build.f_cpu=$CONFIG_CPU
+#leonardo.build.vid=$CONFIG_VID
+#leonardo.build.pid=$CONFIG_PID
+#leonardo.build.core=arduino
+#leonardo.build.variant=leonardo
