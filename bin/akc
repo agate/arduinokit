@@ -6,8 +6,6 @@ ARDUINO_CORE=$ARDUINO_HOME/hardware/arduino/cores/arduino
 ARDUINO_VARIANTS=$ARDUINO_HOME/hardware/arduino/variants
 AVR_HOME=$ARDUINO_HOME/hardware/tools/avr
 
-BUILD_DIR=`pwd`
-
 # CMD
 AVR_BIN=$AVR_HOME/bin
 AVR_GPP=$AVR_BIN/avr-g++
@@ -27,48 +25,64 @@ CONFIG_PID=0x8036
 # PORT
 PORT=/dev/tty.usbmodemfa131
 
+# BUILD SETTING
+SRC_PATH=`realpath $1`
+SRC_NAME=`basename $SRC_PATH`
+SRC_SHA1=`echo -n $SRC_PATH | sha1sum | awk '{ print $1 }'`
+BUILD_DIR=/tmp/arduinokit/build/$SRC_SHA1; mkdir -p $BUILD_DIR
+BUILD_NAME=${SRC_NAME}_HEADER_APPENDED.cpp
+
+/Users/honghao/Workspace/github/arduinokit/lib/source_pre_processor.rb $SRC_PATH > $BUILD_DIR/$BUILD_NAME
+
 # COMPILE
 echo "Compiling..."
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $BUILD_DIR/$1 -o $BUILD_DIR/$1.o 
-$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/WInterrupts.c -o $BUILD_DIR/WInterrupts.c.o 
-$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring.c -o $BUILD_DIR/wiring.c.o 
-$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_analog.c -o $BUILD_DIR/wiring_analog.c.o 
-$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_digital.c -o $BUILD_DIR/wiring_digital.c.o 
-$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_pulse.c -o $BUILD_DIR/wiring_pulse.c.o 
-$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_shift.c -o $BUILD_DIR/wiring_shift.c.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/CDC.cpp -o $BUILD_DIR/CDC.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/HardwareSerial.cpp -o $BUILD_DIR/HardwareSerial.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/HID.cpp -o $BUILD_DIR/HID.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/IPAddress.cpp -o $BUILD_DIR/IPAddress.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/main.cpp -o $BUILD_DIR/main.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/new.cpp -o $BUILD_DIR/new.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/Print.cpp -o $BUILD_DIR/Print.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/Stream.cpp -o $BUILD_DIR/Stream.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/Tone.cpp -o $BUILD_DIR/Tone.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/USBCore.cpp -o $BUILD_DIR/USBCore.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/WMath.cpp -o $BUILD_DIR/WMath.cpp.o 
-$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/WString.cpp -o $BUILD_DIR/WString.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/WInterrupts.c.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring.c.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_analog.c.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_digital.c.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_pulse.c.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_shift.c.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/CDC.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/HardwareSerial.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/HID.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/IPAddress.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/main.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/new.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/Print.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/Stream.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/Tone.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/USBCore.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/WMath.cpp.o 
-$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/WString.cpp.o 
-$AVR_GCC -Os -Wl,--gc-sections -mmcu=$CONFIG_MCU -o $BUILD_DIR/$1.elf $BUILD_DIR/$1.o $BUILD_DIR/core.a -L$BUILD_DIR -lm 
-$AVR_OBJCOPY -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 $BUILD_DIR/$1.elf $BUILD_DIR/$1.eep 
-$AVR_OBJCOPY -O ihex -R .eeprom $BUILD_DIR/$1.elf $BUILD_DIR/$1.hex 
+
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo -I/Users/honghao/Documents/Arduino/libraries/TimerOne $BUILD_DIR/$BUILD_NAME -o $BUILD_DIR/$BUILD_NAME.o
+
+exit
+
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/WInterrupts.c -o $BUILD_DIR/WInterrupts.c.o
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring.c -o $BUILD_DIR/wiring.c.o
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_analog.c -o $BUILD_DIR/wiring_analog.c.o
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_digital.c -o $BUILD_DIR/wiring_digital.c.o
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_pulse.c -o $BUILD_DIR/wiring_pulse.c.o
+$AVR_GCC -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/wiring_shift.c -o $BUILD_DIR/wiring_shift.c.o
+
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/CDC.cpp -o $BUILD_DIR/CDC.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/HardwareSerial.cpp -o $BUILD_DIR/HardwareSerial.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/HID.cpp -o $BUILD_DIR/HID.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/IPAddress.cpp -o $BUILD_DIR/IPAddress.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/main.cpp -o $BUILD_DIR/main.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/new.cpp -o $BUILD_DIR/new.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/Print.cpp -o $BUILD_DIR/Print.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/Stream.cpp -o $BUILD_DIR/Stream.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/Tone.cpp -o $BUILD_DIR/Tone.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/USBCore.cpp -o $BUILD_DIR/USBCore.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/WMath.cpp -o $BUILD_DIR/WMath.cpp.o
+$AVR_GPP -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=$CONFIG_MCU -DF_CPU=$CONFIG_CPU -MMD -DUSB_VID=$CONFIG_VID -DUSB_PID=$CONFIG_PID -DARDUINO=$ARDUINO_VERSION -I$ARDUINO_CORE -I$ARDUINO_VARIANTS/leonardo $ARDUINO_CORE/WString.cpp -o $BUILD_DIR/WString.cpp.o
+
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/WInterrupts.c.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring.c.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_analog.c.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_digital.c.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_pulse.c.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/wiring_shift.c.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/CDC.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/HardwareSerial.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/HID.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/IPAddress.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/main.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/new.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/Print.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/Stream.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/Tone.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/USBCore.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/WMath.cpp.o
+$AVR_AR rcs $BUILD_DIR/core.a $BUILD_DIR/WString.cpp.o
+
+$AVR_GCC -Os -Wl,--gc-sections -mmcu=$CONFIG_MCU -o $BUILD_DIR/$BUILD_NAME.elf $BUILD_DIR/$BUILD_NAME.o $BUILD_DIR/core.a -L$BUILD_DIR -lm
+$AVR_OBJCOPY -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 $BUILD_DIR/$BUILD_NAME.elf $BUILD_DIR/$BUILD_NAME.eep
+$AVR_OBJCOPY -O ihex -R .eeprom $BUILD_DIR/$BUILD_NAME.elf $BUILD_DIR/$BUILD_NAME.hex
 
 # REBOOT
 echo "Forcing reset using 1200bps open/close on port $PORT"
@@ -76,7 +90,7 @@ stty -F $PORT 1200 cs8 cread clocal; sleep 1
 
 # UPLOAD
 echo "Uploading..."
-$AVRDUDE -C$AVR_HOME/etc/avrdude.conf -v -p$CONFIG_MCU -cavr109 -P$PORT -b57600 -D -Uflash:w:$BUILD_DIR/$1.hex:i 
+$AVRDUDE -C$AVR_HOME/etc/avrdude.conf -v -p$CONFIG_MCU -cavr109 -P$PORT -b57600 -D -Uflash:w:$BUILD_DIR/$BUILD_NAME.hex:i
 
 #######################
 #### Arduino Header ###
